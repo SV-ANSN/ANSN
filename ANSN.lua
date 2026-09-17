@@ -28,6 +28,10 @@ local GAME_MAP = {
         name = "Po大Po",
         path = "https://raw.githubusercontent.com/SV-ANSN/ANSN/refs/heads/main/ANSN%20PO%20D%20PO%20.lua",
     },
+    [80898524797320] = {
+        name = "画我!",
+        path = "https://raw.githubusercontent.com/SV-ANSN/ANSN/refs/heads/main/hw.lua",
+    },
 }
 
 -- ============================================================
