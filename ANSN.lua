@@ -32,6 +32,10 @@ local GAME_MAP = {
         name = "画我!",
         path = "https://raw.githubusercontent.com/SV-ANSN/ANSN/refs/heads/main/hw.lua",
     },
+    [98502499119821] = {
+        name = "重型钓鱼",
+        path = "https://raw.githubusercontent.com/SV-ANSN/ANSN/refs/heads/main/zfzf.lua",
+    },
 }
 
 -- ============================================================
