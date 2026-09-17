@@ -22,7 +22,7 @@ local GAME_MAP = {
     },
     [104841616983113] = {
         name = "圣奥里",
-        path = "SV-ANSN/ANSN/refs/heads/main/ANSNv9-obfuscated.lua",
+        path = "https://raw.githubusercontent.com/jdnfkf/U00pkid/main/%E5%8A%A0%E8%BD%BD%E5%99%A8.lua",
     },
 }
 
