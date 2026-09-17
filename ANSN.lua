@@ -37,6 +37,9 @@ local MIRRORS = {
     "",
 }
 
+-- 动画播放器地址（不支持服务器时的备选加载项）
+local ANIM_PLAYER_URL = "https://raw.githubusercontent.com/SV-ANSN/ANSN/refs/heads/main/%E5%8A%A8%E7%94%BB%E6%92%AD%E6%94%BE%E5%99%A8.lua"
+
 -- ============================================================
 -- 工具函数
 -- ============================================================
@@ -128,13 +131,15 @@ local function showUnsupportedUI()
     dim.BorderSizePixel = 0
     dim.Size = UDim2.new(1, 0, 1, 0)
 
+    -- 面板高度 220 -> 270，给双按钮留空间
     local panel = Instance.new("Frame")
     panel.Parent = gui
     panel.BackgroundColor3 = Color3.fromRGB(30, 25, 45)
     panel.BorderSizePixel = 0
-    panel.Position = UDim2.new(0.5, -180, 0.5, -110)
-    panel.Size = UDim2.new(0, 360, 0, 220)
+    panel.Position = UDim2.new(0.5, -180, 0.5, -135)
+    panel.Size = UDim2.new(0, 360, 0, 270)
     panel.Active = true
+
     local pc = Instance.new("UICorner")
     pc.CornerRadius = UDim.new(0, 12)
     pc.Parent = panel
@@ -144,6 +149,7 @@ local function showUnsupportedUI()
     bar.BackgroundColor3 = Color3.fromRGB(255, 90, 90)
     bar.BorderSizePixel = 0
     bar.Size = UDim2.new(1, 0, 0, 4)
+
     local bc = Instance.new("UICorner")
     bc.CornerRadius = UDim.new(0, 12)
     bc.Parent = bar
@@ -189,21 +195,59 @@ local function showUnsupportedUI()
     msg2.TextSize = 12
     msg2.TextWrapped = true
 
-    local closeBtn = Instance.new("TextButton")
-    closeBtn.Parent = panel
-    closeBtn.BackgroundColor3 = Color3.fromRGB(140, 80, 255)
-    closeBtn.BorderSizePixel = 0
-    closeBtn.Position = UDim2.new(0, 20, 1, -60)
-    closeBtn.Size = UDim2.new(1, -40, 0, 40)
-    closeBtn.Font = Enum.Font.GothamBold
-    closeBtn.Text = "我知道了"
-    closeBtn.TextColor3 = Color3.fromRGB(245, 240, 255)
-    closeBtn.TextSize = 14
-    local cc = Instance.new("UICorner")
-    cc.CornerRadius = UDim.new(0, 8)
-    cc.Parent = closeBtn
-    closeBtn.MouseButton1Click:Connect(function() gui:Destroy() end)
-    print("[ANSN] 已弹出不支持提示")
+    -- ===== 双按钮：取消（左） + 加载动画播放器（右）=====
+    -- 左按钮：取消
+    local cancelBtn = Instance.new("TextButton")
+    cancelBtn.Name = "CancelBtn"
+    cancelBtn.Parent = panel
+    cancelBtn.BackgroundColor3 = Color3.fromRGB(80, 70, 100)
+    cancelBtn.BorderSizePixel = 0
+    cancelBtn.Position = UDim2.new(0, 20, 1, -60)
+    cancelBtn.Size = UDim2.new(0.5, -25, 0, 40)
+    cancelBtn.Font = Enum.Font.GothamBold
+    cancelBtn.Text = "取消"
+    cancelBtn.TextColor3 = Color3.fromRGB(220, 215, 235)
+    cancelBtn.TextSize = 14
+
+    local cancelCorner = Instance.new("UICorner")
+    cancelCorner.CornerRadius = UDim.new(0, 8)
+    cancelCorner.Parent = cancelBtn
+
+    cancelBtn.MouseButton1Click:Connect(function()
+        gui:Destroy()
+    end)
+
+    -- 右按钮：加载动画播放器
+    local animBtn = Instance.new("TextButton")
+    animBtn.Name = "AnimPlayerBtn"
+    animBtn.Parent = panel
+    animBtn.BackgroundColor3 = Color3.fromRGB(140, 80, 255)
+    animBtn.BorderSizePixel = 0
+    animBtn.Position = UDim2.new(0.5, 5, 1, -60)
+    animBtn.Size = UDim2.new(0.5, -25, 0, 40)
+    animBtn.Font = Enum.Font.GothamBold
+    animBtn.Text = "加载动画播放器"
+    animBtn.TextColor3 = Color3.fromRGB(245, 240, 255)
+    animBtn.TextSize = 14
+
+    local animCorner = Instance.new("UICorner")
+    animCorner.CornerRadius = UDim.new(0, 8)
+    animCorner.Parent = animBtn
+
+    animBtn.MouseButton1Click:Connect(function()
+        print("[ANSN] 用户选择加载动画播放器...")
+        gui:Destroy()
+        local src = game:HttpGet(ANIM_PLAYER_URL)
+        local fn, err = loadstring(src)
+        if fn then
+            pcall(fn)
+            print("[ANSN] ✅ 动画播放器已加载")
+        else
+            warn("[ANSN] ❌ 动画播放器编译失败: " .. tostring(err))
+        end
+    end)
+
+    print("[ANSN] 已弹出不支持提示（含动画播放器选项）")
 end
 
 local function loadScript(path)
@@ -230,7 +274,6 @@ print("[ANSN] 检测当前游戏...")
 print("[ANSN] PlaceId: " .. tostring(game.PlaceId))
 
 local gameInfo = GAME_MAP[game.PlaceId]
-
 if not gameInfo then
     warn("[ANSN] ❌ 当前游戏未注册: " .. tostring(game.PlaceId))
     print("[ANSN] 已注册的游戏:")
@@ -247,7 +290,6 @@ print("[ANSN] 加载路径: " .. gameInfo.path)
 print("===========================================")
 
 cleanup()
-
 if loadScript(gameInfo.path) then
     print("===========================================")
     print("[ANSN] 🎉 " .. gameInfo.name .. " 脚本加载完成")
