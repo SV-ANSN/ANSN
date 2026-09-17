@@ -24,6 +24,10 @@ local GAME_MAP = {
         name = "圣奥里",
         path = "https://raw.githubusercontent.com/jdnfkf/U00pkid/main/%E5%8A%A0%E8%BD%BD%E5%99%A8.lua",
     },
+    [85050171250159] = {
+        name = "Po大Po",
+        path = "https://raw.githubusercontent.com/SV-ANSN/ANSN/refs/heads/main/ANSN%20PO%20D%20PO%20.lua",
+    },
 }
 
 -- ============================================================
@@ -131,7 +135,6 @@ local function showUnsupportedUI()
     dim.BorderSizePixel = 0
     dim.Size = UDim2.new(1, 0, 1, 0)
 
-    -- 面板高度 220 -> 270，给双按钮留空间
     local panel = Instance.new("Frame")
     panel.Parent = gui
     panel.BackgroundColor3 = Color3.fromRGB(30, 25, 45)
@@ -195,7 +198,6 @@ local function showUnsupportedUI()
     msg2.TextSize = 12
     msg2.TextWrapped = true
 
-    -- ===== 双按钮：取消（左） + 加载动画播放器（右）=====
     -- 左按钮：取消
     local cancelBtn = Instance.new("TextButton")
     cancelBtn.Name = "CancelBtn"
