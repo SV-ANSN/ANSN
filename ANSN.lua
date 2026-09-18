@@ -150,7 +150,6 @@ local function showUnsupportedUI()
     panel.Position = UDim2.new(0.5, -180, 0.5, -135)
     panel.Size = UDim2.new(0, 360, 0, 270)
     panel.Active = true
-
     local pc = Instance.new("UICorner")
     pc.CornerRadius = UDim.new(0, 12)
     pc.Parent = panel
@@ -160,7 +159,6 @@ local function showUnsupportedUI()
     bar.BackgroundColor3 = Color3.fromRGB(255, 90, 90)
     bar.BorderSizePixel = 0
     bar.Size = UDim2.new(1, 0, 0, 4)
-
     local bc = Instance.new("UICorner")
     bc.CornerRadius = UDim.new(0, 12)
     bc.Parent = bar
@@ -218,11 +216,9 @@ local function showUnsupportedUI()
     cancelBtn.Text = "取消"
     cancelBtn.TextColor3 = Color3.fromRGB(220, 215, 235)
     cancelBtn.TextSize = 14
-
     local cancelCorner = Instance.new("UICorner")
     cancelCorner.CornerRadius = UDim.new(0, 8)
     cancelCorner.Parent = cancelBtn
-
     cancelBtn.MouseButton1Click:Connect(function()
         gui:Destroy()
     end)
@@ -239,11 +235,9 @@ local function showUnsupportedUI()
     animBtn.Text = "加载动画播放器"
     animBtn.TextColor3 = Color3.fromRGB(245, 240, 255)
     animBtn.TextSize = 14
-
     local animCorner = Instance.new("UICorner")
     animCorner.CornerRadius = UDim.new(0, 8)
     animCorner.Parent = animBtn
-
     animBtn.MouseButton1Click:Connect(function()
         print("[ANSN] 用户选择加载动画播放器...")
         gui:Destroy()
@@ -282,8 +276,15 @@ end
 print("===========================================")
 print("[ANSN] 检测当前游戏...")
 print("[ANSN] PlaceId: " .. tostring(game.PlaceId))
-
+print("[ANSN] GameId: " .. tostring(game.GameId))
 local gameInfo = GAME_MAP[game.PlaceId]
+-- 竞争对手(RIVALS)用GameId匹配，覆盖所有子服
+if not gameInfo and game.GameId == 6035872082 then
+    gameInfo = {
+        name = "竞争对手",
+        path = "https://raw.githubusercontent.com/SV-ANSN/ANSN/refs/heads/main/%E7%AB%9E%E4%BA%89%E5%AF%B9%E6%89%8B.lua",
+    }
+end
 if not gameInfo then
     warn("[ANSN] ❌ 当前游戏未注册: " .. tostring(game.PlaceId))
     print("[ANSN] 已注册的游戏:")
@@ -294,11 +295,9 @@ if not gameInfo then
     showUnsupportedUI()
     return
 end
-
 print("[ANSN] ✅ 识别为: " .. gameInfo.name)
 print("[ANSN] 加载路径: " .. gameInfo.path)
 print("===========================================")
-
 cleanup()
 if loadScript(gameInfo.path) then
     print("===========================================")
