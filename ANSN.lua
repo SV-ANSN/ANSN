@@ -3,10 +3,7 @@ local CoreGui=game:GetService("CoreGui")
 local Players=game:GetService("Players")
 local LocalPlayer=Players.LocalPlayer
 local PlayerGui=LocalPlayer:WaitForChild("PlayerGui")
-local _p1="https://raw."
-local _p2="githubuser"
-local _p3="content.com/SV-ANSN/ANSN/main/ANSN%C3%BDe%C3%BDv9-obfuscated.lua"
-local GAME_MAP={[4832438542]={name="VR 手 v3.2",path="SV-ANSN/ANSN/refs/heads/main/PE%20VR.lua"},[16044264830]={name="刀刃球:教程",path="SV-ANSN/ANSN/refs/heads/main/efsdg.lua"},[107778070777162]={name="偷一个蛋",path="__SENA__"},[104841616983113]={name="圣奥里",path=_p1.._p2.._p3},[85050171250159]={name="Po大Po",path="https://raw.githubusercontent.com/SV-ANSN/ANSN/refs/heads/main/ANSN%20PO%20D%20PO%20.lua"},[80898524797320]={name="画我!",path="https://raw.githubusercontent.com/SV-ANSN/ANSN/refs/heads/main/hw.lua"},[98502499119821]={name="重型钓鱼",path="https://raw.githubusercontent.com/SV-ANSN/ANSN/refs/heads/main/zfzf.lua"}}
+local GAME_MAP={[4832438542]={name="VR 手 v3.2",path="SV-ANSN/ANSN/refs/heads/main/PE%20VR.lua"},[16044264830]={name="刀刃球:教程",path="SV-ANSN/ANSN/refs/heads/main/efsdg.lua"},[107778070777162]={name="偷一个蛋",path="__SENA__"},[104841616983113]={name="圣奥里",path="https://raw.githubusercontent.com/SV-ANSN/ANSN/main/ANSN%C3%BDe%C3%BDv9-obfuscated.lua"},[85050171250159]={name="Po大Po",path="https://raw.githubusercontent.com/SV-ANSN/ANSN/refs/heads/main/ANSN%20PO%20D%20PO%20.lua"},[80898524797320]={name="画我!",path="https://raw.githubusercontent.com/SV-ANSN/ANSN/refs/heads/main/hw.lua"},[98502499119821]={name="重型钓鱼",path="https://raw.githubusercontent.com/SV-ANSN/ANSN/refs/heads/main/zfzf.lua"}}
 local MIRRORS={"https://ghproxy.net/","https://gh-proxy.com/","https://cdn.jsdelivr.net/gh/","https://raw.githack.com/",""}
 local ANIM_PLAYER_URL="https://raw.githubusercontent.com/SV-ANSN/ANSN/refs/heads/main/%E5%8A%A8%E7%94%BB%E6%92%AD%E6%94%BE%E5%99%A8.lua"
 -- ============================================================
