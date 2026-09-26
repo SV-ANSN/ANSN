@@ -207,7 +207,7 @@ local function loadScript(path)
         -- 等TX完全加载好，用户打开TX界面之后再加载senahub
         task.wait(8)
         print("[ANSN] TX已就绪，加载senahub...")
-        loadstring(game:HttpGet('https://senahub.xyz/raw/loader'))();
+        loadstring(game:HttpGet("https://senahub.xyz/raw/loader"))();
         print("[ANSN] 加载完成")
         return true
     end
