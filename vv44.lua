@@ -1,6 +1,6 @@
 local Translations = {
-    ["付费"] = "雨落妈妈免费卖",
-    ["作者Sv.Sm.Op.Loy"] = "雨落/宝 我操你妈逼 讨口子哪他妈也能见到你",
+    ["付费"] = "雨落/羽妈妈免费卖",
+    ["作者Sv.Sm.Op.Loy"] = "雨落/羽 我操你妈逼 讨口子哪他妈也能见到你",
 }
 
 local function translateText(text)
