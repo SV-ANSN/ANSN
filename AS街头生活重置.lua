@@ -17200,7 +17200,7 @@ end)
 
 local ok2, Window = pcall(function()
 	return WindUI:CreateWindow({
-		Title = "AS街头生活重置",
+		Title = "ANSN街头生活重置",
 		Icon = "shield",
 		Author = "SV.OP.LOU.SM",
 		Folder = "ANSN",
