@@ -17278,6 +17278,7 @@ local CFG = type(_G.__espCfg) == "table" and _G.__espCfg or {
 	NoStun = false,
 	BrokenLeg = false,
 	Rainbow = false,
+	PromptInstant = false,
 }
 
 _G.__espCfg = CFG
@@ -18360,6 +18361,15 @@ if Window then
 				CFG.Rainbow = v
 			end,
 		})
+		TabPlayer:Toggle({
+			Title = "秒交互",
+			Desc = "此功能由:日 定制 点一下触发",
+			Value = false,
+			Default = false,
+			Callback = function(v)
+				CFG.PromptInstant = v
+			end,
+		})
 	else
 		warn("player tab fail " .. tostring(TabPlayer))
 	end
@@ -18423,6 +18433,99 @@ local function fillStamina()
 end
 
 conns[#conns + 1] = RunService.Heartbeat:Connect(fillStamina)
+
+local promptOrig = {}
+local promptState = false
+local promptHook = nil
+local promptUIS = game:GetService("UserInputService")
+local firePrompt = fireproximityprompt
+local function promptNearest(keyCode)
+	local ch = LocalPlayer.Character
+	local hrp = ch and ch:FindFirstChild("HumanoidRootPart")
+	if not hrp then
+		return nil
+	end
+	local best, bestD = nil, math.huge
+	for _, o in ipairs(workspace:GetDescendants()) do
+		if o:IsA("ProximityPrompt") and o.Enabled and o.KeyboardKeyCode == keyCode then
+			local par = o.Parent
+			local pos = par:IsA("BasePart") and par.Position or (par:FindFirstChildWhichIsA("BasePart") and par:FindFirstChildWhichIsA("BasePart").Position)
+			if pos then
+				local d = (pos - hrp.Position).Magnitude
+				if d <= (o.MaxActivationDistance or 10) and d < bestD then
+					best, bestD = o, d
+				end
+			end
+		end
+	end
+	return best
+end
+local function applyPromptMode(on)
+	if on and not promptHook and type(firePrompt) == "function" then
+		promptHook = promptUIS.InputBegan:Connect(function(input, processed)
+			if processed or input.UserInputType ~= Enum.UserInputType.Keyboard then
+				return
+			end
+			local target = promptNearest(input.KeyCode)
+			if target then
+				pcall(firePrompt, target)
+			end
+		end)
+	elseif not on and promptHook then
+		promptHook:Disconnect()
+		promptHook = nil
+	end
+	for _, o in ipairs(workspace:GetDescendants()) do
+		if o:IsA("ProximityPrompt") then
+			if on then
+				if promptOrig[o] == nil then
+					promptOrig[o] = o.HoldDuration
+				end
+				pcall(function()
+					if o.HoldDuration ~= 0 then
+						o.HoldDuration = 0
+					end
+				end)
+			elseif promptOrig[o] ~= nil then
+				local orig = promptOrig[o]
+				if orig == 0 then
+					orig = 1
+				end
+				pcall(function()
+					o.HoldDuration = orig
+				end)
+				promptOrig[o] = nil
+			end
+		end
+	end
+end
+conns[#conns + 1] = workspace.DescendantAdded:Connect(function(o)
+	if CFG.PromptInstant and o:IsA("ProximityPrompt") then
+		if promptOrig[o] == nil then
+			promptOrig[o] = o.HoldDuration
+		end
+		pcall(function()
+			o.HoldDuration = 0
+		end)
+	end
+end)
+local promptAcc = 0
+conns[#conns + 1] = RunService.Heartbeat:Connect(function(dt)
+	if CFG.PromptInstant ~= promptState then
+		promptState = CFG.PromptInstant
+		applyPromptMode(promptState)
+		return
+	end
+	if not promptState then
+		return
+	end
+	promptAcc = promptAcc + dt
+	if promptAcc < 1 then
+		return
+	end
+	promptAcc = 0
+	applyPromptMode(true)
+end)
 
 local headParts = {}
 local savedDecal = {}
