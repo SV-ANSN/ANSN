@@ -18379,164 +18379,162 @@ if Window then
 	end
 
 	if okShop and type(TabShop) == "table" then
-		local shopSel = nil
-		local function shopFolder(name)
-			local map = workspace:FindFirstChild("Map")
-			local gs = map and map:FindFirstChild("GunStore")
-			return gs and gs:FindFirstChild(name)
+		local GUN_CN = {
+											["Glock17"] = "格洛克17", ["Glock19X"] = "格洛克19X", ["GlockSwitch"] = "全自动格洛克",
+											["Makarov"] = "马卡洛夫", ["Ruger"] = "鲁格", ["M&P9"] = "M&P9", ["Tec-9"] = "泰克9",
+											["Micro Uzi"] = "微型乌兹", ["Mac"] = "Mac冲锋枪", ["MP5"] = "MP5冲锋枪", ["UMP"] = "UMP冲锋枪",
+											["AK-47"] = "AK-47", ["AK-12"] = "AK-12", ["AKS-74U"] = "AKS-74U", ["AUG"] = "AUG",
+											["Famas"] = "法玛斯", ["Scar-17"] = "SCAR-17", ["TSR-15"] = "TSR-15", ["M27D"] = "M27D",
+											["Thompson"] = "汤姆逊", ["Draco"] = "德拉科", ["Shotgun"] = "霰弹枪", ["Spas"] = "SPAS霰弹枪",
+											["Perun"] = "佩伦", ["ARPistol"] = "ARP手枪", ["Military Vest"] = "军用防弹衣",
+											["Hi-Point"] = "海波因特手枪", ["ProPad"] = "ProPad护甲", ["SpringFieldXDExt"] = "斯普林菲尔德XD",
+											["FullyMicroARP"] = "全自动微型ARP", ["TX22FRT"] = "TX22快射版", ["FullyMicroARPDrum"] = "全自动微型ARP弹鼓",
+											["BlackTipCZ75"] = "黑头CZ75",
+										}
+										local SHOPS = {
+											{ name = "枪店", remote = "GunBuy", dynamic = true },
+											{ name = "黑市", remote = "BMBuy", ui = "BlackMarketUI", items = {
+												{ n = "G22Drum", cn = "格洛克22弹鼓", p = 5000 }, { n = "P320", cn = "西格P320", p = 3000 }, { n = "ARPSwitch", cn = "全自动ARP", p = 12000 },
+												{ n = "FRTMicroDraco", cn = "快射微型德拉科", p = 15000 }, { n = "GalilAR", cn = "加利尔AR", p = 10500 }, { n = "M1911S", cn = "M1911手枪", p = 3500 },
+												{ n = "DracoDrum", cn = "德拉科弹鼓", p = 7500 }, { n = "Mac-Drum", cn = "Mac弹鼓", p = 6500 }, { n = "Kiparis", cn = "基帕里斯", p = 6000 },
+												{ n = "CombatPDW", cn = "战斗PDW", p = 9000 }, { n = "BinaryDraco", cn = "双管德拉科", p = 8000 }, { n = "FN 5.7", cn = "FN5.7", p = 6500 },
+												{ n = "Rush Juice", cn = "冲刺药水", p = 2500 }, { n = "Shotty", cn = "霰弹枪", p = 10000 }, { n = "ZPAP92", cn = "ZPAP92", p = 9500 },
+											} },
+											{ name = "商人", remote = "Buy", ui = "MerchantUI", items = {
+												{ n = "Balaclava", cn = "巴拉克拉瓦面罩", p = 50 }, { n = "MentosBag", cn = "曼妥思袋", p = 300 }, { n = "Blank", cn = "空包弹", p = 1000 },
+												{ n = "C4", cn = "C4炸药", p = 2000 }, { n = "Bat", cn = "球棒", p = 750 }, { n = "Knife", cn = "刀", p = 500 },
+												{ n = "DuffleBag", cn = "行李袋", p = 500 }, { n = "LockPick", cn = "开锁器", p = 500 }, { n = "Firework", cn = "烟花", p = 500 },
+											} },
+											{ name = "面具店", remote = "Buy", ui = "MaskUI", items = {
+												{ n = "SkiMask", cn = "滑雪面罩", p = 50 }, { n = "Bandana", cn = "头巾", p = 50 }, { n = "HackerMask", cn = "黑客面具", p = 75 },
+												{ n = "BlueSki", cn = "蓝色滑雪面罩", p = 75 }, { n = "RedSki", cn = "红色滑雪面罩", p = 75 }, { n = "Balaclava", cn = "巴拉克拉瓦面罩", p = 50 },
+												{ n = "ClownMask", cn = "小丑面具", p = 75 }, { n = "GhostFace", cn = "鬼脸面具", p = 100 }, { n = "JasonMask", cn = "杰森面具", p = 100 },
+												{ n = "PurgeMask", cn = "清剿夜面具", p = 100 },
+											} },
+											{ name = "熟食店", remote = "Buy", ui = "DeliUI", items = {
+												{ n = "Water", cn = "水", p = 50 }, { n = "Taco", cn = "墨西哥卷", p = 50 }, { n = "Pizza", cn = "披萨", p = 50 },
+												{ n = "Dice", cn = "骰子", p = 50 }, { n = "DuffleBag", cn = "行李袋", p = 500 }, { n = "Balloon", cn = "气球", p = 100 },
+											} },
+											{ name = "鸡肉店", remote = "Buy", ui = "ChickenUI", items = {
+												{ n = "Burger", cn = "汉堡", p = 50 }, { n = "Water", cn = "水", p = 50 }, { n = "Taco", cn = "墨西哥卷", p = 50 }, { n = "Pizza", cn = "披萨", p = 50 },
+											} },
+											{ name = "冰店", remote = "Buy", ui = "TheIceUI", items = {
+												{ n = "Water", cn = "水", p = 50 }, { n = "Taco", cn = "墨西哥卷", p = 50 }, { n = "Pizza", cn = "披萨", p = 50 },
+												{ n = "Dice", cn = "骰子", p = 50 }, { n = "MoneyGun", cn = "印钞枪", p = 2500 },
+											} },
+											{ name = "健身房", remote = "Buy", ui = "GymUI", items = {
+												{ n = "ProteinBar", cn = "蛋白棒", p = 100 }, { n = "ProteinShake", cn = "蛋白奶昔", p = 100 },
+											} },
+										}
+								local function gunStore()
+									local map = workspace:FindFirstChild("Map")
+									return map and map:FindFirstChild("GunStore")
+								end
+								local function collectGun()
+									local list = {}
+									local gs = gunStore()
+									if not gs then
+										return list
+									end
+									local wall = gs:FindFirstChild("Wall")
+									if wall then
+										for _, slot in ipairs(wall:GetChildren()) do
+											local tv = slot:FindFirstChild("Tool")
+											local pv = slot:FindFirstChild("Price")
+											local lv = slot:FindFirstChild("Level")
+											if tv and pv and type(tv.Value) == "string" then
+												list[#list + 1] = { n = tv.Value, cn = GUN_CN[tv.Value], p = pv.Value, lv = (lv and lv.Value) or 0 }
+											end
+										end
+									end
+									for _, folderName in ipairs({ "GunTable", "GunPasses", "GunProduct" }) do
+										local f = gs:FindFirstChild(folderName)
+										if f then
+											for _, m in ipairs(f:GetChildren()) do
+												local price = m:GetAttribute("Price")
+												local lvl = m:GetAttribute("Level") or 0
+												if not price then
+													local pr = m:FindFirstChild("ProximityPrompt", true)
+													local obj = pr and pr.ObjectText or ""
+													price = tonumber(string.match(obj, "%$(%d+)"))
+												end
+												if price then
+													list[#list + 1] = { n = m.Name, cn = GUN_CN[m.Name], p = price, lv = lvl }
+												end
+											end
+										end
+									end
+									table.sort(list, function(a, b)
+										return a.p < b.p
+									end)
+									return list
+								end
+								local function livePrice(uiName, itemName)
+									local misc = game:GetService("ReplicatedStorage"):FindFirstChild("Misc")
+									local ui = misc and misc:FindFirstChild(uiName)
+									if not ui then
+										return nil
+									end
+									for _, o in ipairs(ui:GetDescendants()) do
+										if o.Name == itemName then
+											for _, c in ipairs(o:GetDescendants()) do
+												if c:IsA("TextLabel") and c.Name == "Price" then
+													local cleaned = string.gsub(c.Text or "", "[^%d]", "")
+													local n = tonumber(cleaned)
+													if n and n > 0 then
+														return n
+													end
+												end
+											end
+										end
+									end
+									return nil
+								end
+		local remotes = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
+		local function buyItem(shop, it)
+			if not remotes then
+				return
+			end
+			local remote = remotes:FindFirstChild(shop.remote)
+			if not remote then
+				warn("no remote " .. shop.remote)
+				return
+			end
+			if shop.hospitalMode then
+				remote:FireServer("Purchase", it.n)
+			else
+				remote:FireServer(it.n, it.p)
+			end
 		end
-		local function collect()
-			local list = {}
-			local wall = shopFolder("Wall")
-			if wall then
-				for _, slot in ipairs(wall:GetChildren()) do
-					local tv = slot:FindFirstChild("Tool")
-					local pv = slot:FindFirstChild("Price")
-					local lv = slot:FindFirstChild("Level")
-					if tv and pv and type(tv.Value) == "string" then
-						list[#list + 1] = { en = tv.Value, price = pv.Value, level = (lv and lv.Value) or 0 }
+		for _, sh in ipairs(SHOPS) do
+			local items = sh.dynamic and collectGun() or sh.items
+			if sh.ui then
+				for _, it in ipairs(items) do
+					local lp = livePrice(sh.ui, it.n)
+					if lp then
+						it.p = lp
 					end
 				end
 			end
-			for _, folderName in ipairs({ "GunTable", "GunPasses", "GunProduct" }) do
-				local f = shopFolder(folderName)
-				if f then
-					for _, m in ipairs(f:GetChildren()) do
-						local price = m:GetAttribute("Price")
-						local lvl = m:GetAttribute("Level") or 0
-						if not price then
-							local pr = m:FindFirstChild("ProximityPrompt", true)
-							local obj = pr and pr.ObjectText or ""
-							local p2 = string.match(obj, "%$(%d+)")
-							price = tonumber(p2)
-						end
-						if price then
-							list[#list + 1] = { en = m.Name, price = price, level = lvl }
-						end
-					end
-				end
-			end
-			table.sort(list, function(a, b)
-				return a.price < b.price
+			local section
+			pcall(function()
+				local titleExtra = sh.name == "黑市" and "  [需黑市通行证]" or ""
+					section = TabShop:Section({ Title = sh.name .. "  (" .. #items .. ")" .. titleExtra, Opened = false })
 			end)
-			return list
-		end
-		local items = collect()
-		local SHOP_CN = {
-			["Hi-Point"] = "海波因特手枪",
-			["ProPad"] = "ProPad护甲",
-			["SpringFieldXDExt"] = "斯普林菲尔德XD",
-			["FullyMicroARP"] = "全自动微型ARP",
-			["TX22FRT"] = "TX22快射版",
-			["FullyMicroARPDrum"] = "全自动微型ARP弹鼓",
-			["BlackTipCZ75"] = "黑头CZ75",
-			["Glock17"] = "格洛克17",
-			["Glock19X"] = "格洛克19X",
-			["GlockSwitch"] = "全自动格洛克",
-			["Makarov"] = "马卡洛夫",
-			["Ruger"] = "鲁格",
-			["M&P9"] = "M&P9",
-			["Tec-9"] = "泰克9",
-			["Micro Uzi"] = "微型乌兹",
-			["Mac"] = "Mac冲锋枪",
-			["MP5"] = "MP5冲锋枪",
-			["UMP"] = "UMP冲锋枪",
-			["AK-47"] = "AK-47",
-			["AK-12"] = "AK-12",
-			["AKS-74U"] = "AKS-74U",
-			["AUG"] = "AUG",
-			["Famas"] = "法玛斯",
-			["Scar-17"] = "SCAR-17",
-			["TSR-15"] = "TSR-15",
-			["M27D"] = "M27D",
-			["Thompson"] = "汤姆逊",
-			["Draco"] = "德拉科",
-			["Shotgun"] = "霰弹枪",
-			["Spas"] = "SPAS霰弹枪",
-			["Perun"] = "佩伦",
-			["ARPistol"] = "ARP手枪",
-			["Military Vest"] = "军用防弹衣",
-		}
-		local function cnName(n)
-			return SHOP_CN[n] or n
-		end
-		local function enName(label)
-			if not label then
-				return nil
+			local host = section or TabShop
+			for _, it in ipairs(items) do
+				local label = (it.cn or it.n) .. "    $" .. tostring(it.p)
+				pcall(function()
+					host:Button({
+						Title = it.cn or it.n,
+						Desc = "$" .. tostring(it.p) .. ((it.lv and it.lv > 0) and ("  Lv" .. it.lv .. " 起") or "") .. (sh.name == "黑市" and "  需黑市通行证" or ""),
+						Callback = function()
+							buyItem(sh, it)
+						end,
+					})
+				end)
 			end
-			local want = string.match(label, "^(.-)%s%s%$") or label
-			for en, zh in pairs(SHOP_CN) do
-				if zh == want then
-					return en
-				end
-			end
-			return want
 		end
-		local function labelOf(item)
-			return cnName(item.en) .. "  $" .. tostring(item.price) .. "  Lv" .. tostring(item.level)
-		end
-		local values = {}
-		local byLabel = {}
-		for _, it in ipairs(items) do
-			local lb = labelOf(it)
-			values[#values + 1] = lb
-			byLabel[lb] = it
-		end
-		local dd
-		dd = TabShop:Dropdown({
-			Title = "选择枪械",
-			Desc = "选中后点下面购买",
-			Values = values,
-			Value = values[1] or "",
-			Callback = function(v)
-				shopSel = v
-			end,
-		})
-		shopSel = values[1]
-		TabShop:Button({
-			Title = "刷新枪械列表",
-			Desc = "价格或库存变了点一下",
-			Callback = function()
-				local its = collect()
-				local vs = {}
-				for _, it in ipairs(its) do
-					vs[#vs + 1] = labelOf(it)
-				end
-				if dd then
-					pcall(function()
-						dd:SetValues(vs)
-					end)
-					if vs[1] then
-						pcall(function()
-							dd:Set(vs[1])
-						end)
-					end
-				end
-			end,
-		})
-		TabShop:Button({
-			Title = "购买选中枪械",
-			Desc = "远程购买，不用走到枪店",
-			Callback = function()
-				local sel = shopSel or (dd and dd.Value)
-				if not sel then
-					return
-				end
-				local its = collect()
-				local want = string.match(sel, "^(.-)%s%s%$") or sel
-				want = enName(want) or want
-				for _, it in ipairs(its) do
-					if it.en == want then
-						local remotes = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
-						local gunBuy = remotes and remotes:FindFirstChild("GunBuy")
-						if gunBuy then
-							gunBuy:FireServer(it.en, it.price)
-						end
-						return
-					end
-				end
-			end,
-		})
 	else
 		warn("shop tab fail " .. tostring(TabShop))
 	end
