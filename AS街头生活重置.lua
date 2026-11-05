@@ -17208,8 +17208,6 @@ local ok2, Window = pcall(function()
 		Theme = "Dark",
 		HideSearchBar = false,
 		SideBarWidth = 180,
-		Background = "rbxassetid://83197771646229",
-		BackgroundImageTransparency = 0,
 		ToggleKey = Enum.KeyCode.Insert,
 		User = { Enabled = true, Anonymous = false },
 	})
@@ -18139,7 +18137,13 @@ if Window then
 	local okPlayer, TabPlayer = pcall(function()
 		return Window:Tab({ Title = "玩家", Icon = "user" })
 	end)
-	_G.__espTabs = { TabEsp, TabCombat, TabPlayer }
+	local okShop, TabShop = pcall(function()
+		return Window:Tab({ Title = "远程购买", Icon = "shopping-cart" })
+	end)
+	local okATM, TabATM = pcall(function()
+		return Window:Tab({ Title = "ATM", Icon = "credit-card" })
+	end)
+	_G.__espTabs = { TabEsp, TabCombat, TabPlayer, TabShop, TabATM }
 
 	if okEsp and type(TabEsp) == "table" then
 		TabEsp:Toggle({
@@ -18372,6 +18376,243 @@ if Window then
 		})
 	else
 		warn("player tab fail " .. tostring(TabPlayer))
+	end
+
+	if okShop and type(TabShop) == "table" then
+		local shopSel = nil
+		local function shopFolder(name)
+			local map = workspace:FindFirstChild("Map")
+			local gs = map and map:FindFirstChild("GunStore")
+			return gs and gs:FindFirstChild(name)
+		end
+		local function collect()
+			local list = {}
+			local wall = shopFolder("Wall")
+			if wall then
+				for _, slot in ipairs(wall:GetChildren()) do
+					local tv = slot:FindFirstChild("Tool")
+					local pv = slot:FindFirstChild("Price")
+					local lv = slot:FindFirstChild("Level")
+					if tv and pv and type(tv.Value) == "string" then
+						list[#list + 1] = { en = tv.Value, price = pv.Value, level = (lv and lv.Value) or 0 }
+					end
+				end
+			end
+			for _, folderName in ipairs({ "GunTable", "GunPasses", "GunProduct" }) do
+				local f = shopFolder(folderName)
+				if f then
+					for _, m in ipairs(f:GetChildren()) do
+						local price = m:GetAttribute("Price")
+						local lvl = m:GetAttribute("Level") or 0
+						if not price then
+							local pr = m:FindFirstChild("ProximityPrompt", true)
+							local obj = pr and pr.ObjectText or ""
+							local p2 = string.match(obj, "%$(%d+)")
+							price = tonumber(p2)
+						end
+						if price then
+							list[#list + 1] = { en = m.Name, price = price, level = lvl }
+						end
+					end
+				end
+			end
+			table.sort(list, function(a, b)
+				return a.price < b.price
+			end)
+			return list
+		end
+		local items = collect()
+		local SHOP_CN = {
+			["Hi-Point"] = "海波因特手枪",
+			["ProPad"] = "ProPad护甲",
+			["SpringFieldXDExt"] = "斯普林菲尔德XD",
+			["FullyMicroARP"] = "全自动微型ARP",
+			["TX22FRT"] = "TX22快射版",
+			["FullyMicroARPDrum"] = "全自动微型ARP弹鼓",
+			["BlackTipCZ75"] = "黑头CZ75",
+			["Glock17"] = "格洛克17",
+			["Glock19X"] = "格洛克19X",
+			["GlockSwitch"] = "全自动格洛克",
+			["Makarov"] = "马卡洛夫",
+			["Ruger"] = "鲁格",
+			["M&P9"] = "M&P9",
+			["Tec-9"] = "泰克9",
+			["Micro Uzi"] = "微型乌兹",
+			["Mac"] = "Mac冲锋枪",
+			["MP5"] = "MP5冲锋枪",
+			["UMP"] = "UMP冲锋枪",
+			["AK-47"] = "AK-47",
+			["AK-12"] = "AK-12",
+			["AKS-74U"] = "AKS-74U",
+			["AUG"] = "AUG",
+			["Famas"] = "法玛斯",
+			["Scar-17"] = "SCAR-17",
+			["TSR-15"] = "TSR-15",
+			["M27D"] = "M27D",
+			["Thompson"] = "汤姆逊",
+			["Draco"] = "德拉科",
+			["Shotgun"] = "霰弹枪",
+			["Spas"] = "SPAS霰弹枪",
+			["Perun"] = "佩伦",
+			["ARPistol"] = "ARP手枪",
+			["Military Vest"] = "军用防弹衣",
+		}
+		local function cnName(n)
+			return SHOP_CN[n] or n
+		end
+		local function enName(label)
+			if not label then
+				return nil
+			end
+			local want = string.match(label, "^(.-)%s%s%$") or label
+			for en, zh in pairs(SHOP_CN) do
+				if zh == want then
+					return en
+				end
+			end
+			return want
+		end
+		local function labelOf(item)
+			return cnName(item.en) .. "  $" .. tostring(item.price) .. "  Lv" .. tostring(item.level)
+		end
+		local values = {}
+		local byLabel = {}
+		for _, it in ipairs(items) do
+			local lb = labelOf(it)
+			values[#values + 1] = lb
+			byLabel[lb] = it
+		end
+		local dd
+		dd = TabShop:Dropdown({
+			Title = "选择枪械",
+			Desc = "选中后点下面购买",
+			Values = values,
+			Value = values[1] or "",
+			Callback = function(v)
+				shopSel = v
+			end,
+		})
+		shopSel = values[1]
+		TabShop:Button({
+			Title = "刷新枪械列表",
+			Desc = "价格或库存变了点一下",
+			Callback = function()
+				local its = collect()
+				local vs = {}
+				for _, it in ipairs(its) do
+					vs[#vs + 1] = labelOf(it)
+				end
+				if dd then
+					pcall(function()
+						dd:SetValues(vs)
+					end)
+					if vs[1] then
+						pcall(function()
+							dd:Set(vs[1])
+						end)
+					end
+				end
+			end,
+		})
+		TabShop:Button({
+			Title = "购买选中枪械",
+			Desc = "远程购买，不用走到枪店",
+			Callback = function()
+				local sel = shopSel or (dd and dd.Value)
+				if not sel then
+					return
+				end
+				local its = collect()
+				local want = string.match(sel, "^(.-)%s%s%$") or sel
+				want = enName(want) or want
+				for _, it in ipairs(its) do
+					if it.en == want then
+						local remotes = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
+						local gunBuy = remotes and remotes:FindFirstChild("GunBuy")
+						if gunBuy then
+							gunBuy:FireServer(it.en, it.price)
+						end
+						return
+					end
+				end
+			end,
+		})
+	else
+		warn("shop tab fail " .. tostring(TabShop))
+	end
+
+	if okATM and type(TabATM) == "table" then
+		local rs = game:GetService("ReplicatedStorage")
+		local atmRemote = rs:FindFirstChild("Remotes") and rs.Remotes:FindFirstChild("ATM")
+		local lp = game:GetService("Players").LocalPlayer
+		local data = lp:WaitForChild("Data", 10)
+		local moneyV = data and data:FindFirstChild("Money")
+		local bankV = data and data:FindFirstChild("Bank")
+		local function num(v)
+			return v and math.floor(tonumber(v.Value) or 0) or 0
+		end
+		local amountText = ""
+		TabATM:Input({
+			Title = "金额",
+			Desc = "直接输入数字",
+			Placeholder = "输入金额",
+			Value = "",
+			Callback = function(v)
+				amountText = v
+			end,
+		})
+		local function amount()
+			local cleaned = string.gsub(amountText or "", "[^%d]", "")
+			return tonumber(cleaned) or 0
+		end
+		TabATM:Button({
+			Title = "存钱",
+			Callback = function()
+				if atmRemote and amount() > 0 then
+					atmRemote:FireServer("Deposit", amount())
+				end
+			end,
+		})
+		TabATM:Button({
+			Title = "取出",
+			Callback = function()
+				if atmRemote and amount() > 0 then
+					atmRemote:FireServer("Withdraw", amount())
+				end
+			end,
+		})
+		TabATM:Button({
+			Title = "全部存钱",
+			Callback = function()
+				if not atmRemote then
+					return
+				end
+				local left = num(moneyV)
+				while left > 0 do
+					local part = math.min(500000, left)
+					atmRemote:FireServer("Deposit", part)
+					left = left - part
+					task.wait(0.15)
+				end
+			end,
+		})
+		TabATM:Button({
+			Title = "全部取出",
+			Callback = function()
+				if not atmRemote then
+					return
+				end
+				local left = num(bankV)
+				while left > 0 do
+					local part = math.min(500000, left)
+					atmRemote:FireServer("Withdraw", part)
+					left = left - part
+					task.wait(0.15)
+				end
+			end,
+		})
+	else
+		warn("atm tab fail " .. tostring(TabATM))
 	end
 
 else
